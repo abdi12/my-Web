@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Comparison</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Car Comparison</h1>
+
+        {% if cars %}
+            <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    {% for car in cars %}
+                        <th>{{ car.make }} {{ car.model }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Year</td>
+                    {% for car in cars %}
+                        <td>{{ car.year }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Price</td>
+                    {% for car in cars %}
+                        <td>${{ car.price }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Engine HP</td>
+                    {% for car in cars %}
+                        <td>{{ car.engine_hp }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Mileage</td>
+                    {% for car in cars %}
+                        <td>{{ car.mileage }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    {% else %}
+        <p>No cars selected for comparison or an error occurred.</p>
+    {% endif %}
+
+    <br>
+    <a href="/">Back to Car List</a>
+    </div>
+</body>
+</html>

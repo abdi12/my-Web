@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Comparison Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Car Comparison Tool!</h1>
+        <p>Select cars to compare their features.</p>
+        <div id="car-listings">
+            <!-- Car listings will be populated here by JavaScript -->
+        </div>
+        <button id="compare-button">Compare Selected Cars</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            fetch('/api/cars')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(cars => {
+                    const carListingsDiv = document.getElementById('car-listings');
+                    cars.forEach(car => {
+                        const carItemDiv = document.createElement('div');
+                        carItemDiv.className = 'car-item';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'car-select-checkbox';
+                        checkbox.value = car.id;
+
+                        const carInfoSpan = document.createElement('span');
+                        carInfoSpan.textContent = `${car.make} ${car.model} (${car.year}) - $${car.price}`;
+
+                        carItemDiv.appendChild(checkbox);
+                        carItemDiv.appendChild(carInfoSpan);
+                        carListingsDiv.appendChild(carItemDiv);
+                    });
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+
+            const compareButton = document.getElementById('compare-button');
+            compareButton.addEventListener('click', function() {
+                const selectedCheckboxes = document.querySelectorAll('.car-select-checkbox:checked');
+                const selectedCarIds = [];
+                selectedCheckboxes.forEach(checkbox => {
+                    selectedCarIds.push(checkbox.value);
+                });
+
+                if (selectedCarIds.length === 0) {
+                    alert('Please select at least one car to compare.');
+                    return;
+                }
+
+                const compareUrl = `/compare?ids=${selectedCarIds.join(',')}`;
+                window.location.href = compareUrl;
+            });
+        };
+    </script>
+</body>
+</html>
