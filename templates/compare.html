@@ -16,11 +16,17 @@
                 <tr>
                     <th>Feature</th>
                     {% for car in cars %}
-                        <th>{{ car.make }} {{ car.model }}</th>
+                        <th>{{ car.brand }} {{ car.model }}</th>
                     {% endfor %}
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td>Brand</td>
+                    {% for car in cars %}
+                        <td>{{ car.brand }}</td>
+                    {% endfor %}
+                </tr>
                 <tr>
                     <td>Year</td>
                     {% for car in cars %}
@@ -31,6 +37,60 @@
                     <td>Price</td>
                     {% for car in cars %}
                         <td>${{ car.price }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Style</td>
+                    {% for car in cars %}
+                        <td>{{ car.style }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Performance</td>
+                    {% for car in cars %}
+                        <td>{{ car.performance }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Wheel Drive</td>
+                    {% for car in cars %}
+                        <td>{{ car.wheel_drive }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Sales Volume/Rating</td>
+                    {% for car in cars %}
+                        <td>{{ car.sales }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>After-Sales Support</td>
+                    {% for car in cars %}
+                        <td>{{ car.after_sales }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Fuel Efficiency</td>
+                    {% for car in cars %}
+                        <td>{{ car.fuel_efficiency }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Safety Features/Rating</td>
+                    {% for car in cars %}
+                        <td>{{ car.safety }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Available Colors</td>
+                    {% for car in cars %}
+                        <td>{{ car.color }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Energy Type</td>
+                    {% for car in cars %}
+                        <td>{{ car.energy }}</td>
                     {% endfor %}
                 </tr>
                 <tr>

@@ -37,7 +37,8 @@
                         checkbox.value = car.id;
 
                         const carInfoSpan = document.createElement('span');
-                        carInfoSpan.textContent = `${car.make} ${car.model} (${car.year}) - $${car.price}`;
+                        // Updated to include brand, style, and price in the new format
+                        carInfoSpan.textContent = `${car.brand} ${car.model} (${car.year}) - Style: ${car.style} - Price: $${car.price}`;
 
                         carItemDiv.appendChild(checkbox);
                         carItemDiv.appendChild(carInfoSpan);
