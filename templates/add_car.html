@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Car</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Basic styling for the form */
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* So padding doesn't affect width */
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add a New Car for Comparison</h1>
+        <form method="POST" action="{{ url_for('add_car_route') }}">
+            <div class="form-group">
+                <label for="brand">Brand:</label>
+                <input type="text" id="brand" name="brand" required>
+            </div>
+            <div class="form-group">
+                <label for="model">Model:</label>
+                <input type="text" id="model" name="model" required>
+            </div>
+            <div class="form-group">
+                <label for="year">Year:</label>
+                <input type="number" id="year" name="year" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price ($):</label>
+                <input type="number" id="price" name="price" required>
+            </div>
+            <div class="form-group">
+                <label for="style">Style (e.g., Sedan, SUV):</label>
+                <input type="text" id="style" name="style">
+            </div>
+            <div class="form-group">
+                <label for="engine_hp">Engine HP:</label>
+                <input type="number" id="engine_hp" name="engine_hp">
+            </div>
+            <div class="form-group">
+                <label for="mileage">Mileage:</label>
+                <input type="number" id="mileage" name="mileage">
+            </div>
+            <div class="form-group">
+                <label for="performance">Performance (e.g., 0-60mph, handling):</label>
+                <textarea id="performance" name="performance"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="wheel_drive">Wheel Drive (e.g., FWD, AWD, RWD):</label>
+                <input type="text" id="wheel_drive" name="wheel_drive">
+            </div>
+            <div class="form-group">
+                <label for="sales">Sales Info (e.g., demand, units sold):</label>
+                <input type="text" id="sales" name="sales">
+            </div>
+            <div class="form-group">
+                <label for="after_sales">After-Sales Support (e.g., warranty, service):</label>
+                <textarea id="after_sales" name="after_sales"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="fuel_efficiency">Fuel Efficiency (e.g., MPG City/Hwy):</label>
+                <input type="text" id="fuel_efficiency" name="fuel_efficiency">
+            </div>
+            <div class="form-group">
+                <label for="safety">Safety Features/Rating:</label>
+                <textarea id="safety" name="safety"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="color">Color(s):</label>
+                <input type="text" id="color" name="color">
+            </div>
+            <div class="form-group">
+                <label for="energy">Energy Type (e.g., Gasoline, Electric, Hybrid):</label>
+                <input type="text" id="energy" name="energy">
+            </div>
+            
+            <button type="submit">Add Car</button>
+        </form>
+        <p><a href="{{ url_for('home') }}">Back to Car List</a></p>
+    </div>
+</body>
+</html>

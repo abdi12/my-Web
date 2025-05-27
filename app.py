@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
@@ -180,15 +180,90 @@ def compare_cars():
             selected_cars.append({
                 "id": str(car_doc["_id"]),
                 "original_id": car_doc.get("id"),
-                "make": car_doc.get("make"),
+                "brand": car_doc.get("brand"),
                 "model": car_doc.get("model"),
                 "year": car_doc.get("year"),
                 "price": car_doc.get("price"),
+                "style": car_doc.get("style"),
+                "performance": car_doc.get("performance"),
+                "wheel_drive": car_doc.get("wheel_drive"),
+                "sales": car_doc.get("sales"),
+                "after_sales": car_doc.get("after_sales"),
+                "fuel_efficiency": car_doc.get("fuel_efficiency"),
+                "safety": car_doc.get("safety"),
+                "color": car_doc.get("color"),
+                "energy": car_doc.get("energy"),
                 "engine_hp": car_doc.get("engine_hp"),
                 "mileage": car_doc.get("mileage")
             })
             
     return render_template('compare.html', cars=selected_cars)
+
+@app.route('/add', methods=['GET', 'POST'])
+def add_car_route():
+    if request.method == 'POST':
+        # --- Data Retrieval ---
+        brand = request.form.get('brand')
+        model = request.form.get('model')
+        try:
+            year = int(request.form.get('year'))
+            price = int(request.form.get('price'))
+            engine_hp_str = request.form.get('engine_hp')
+            mileage_str = request.form.get('mileage')
+            
+            engine_hp = int(engine_hp_str) if engine_hp_str and engine_hp_str.strip() else None
+            mileage = int(mileage_str) if mileage_str and mileage_str.strip() else None
+        except ValueError:
+            # Basic error handling: return an error message or re-render form with error
+            # For now, a simple error, but flashing messages would be better in a real app.
+            return "Invalid data for year, price, engine_hp, or mileage. Please enter numbers.", 400
+
+        style = request.form.get('style')
+        performance = request.form.get('performance')
+        wheel_drive = request.form.get('wheel_drive')
+        sales = request.form.get('sales')
+        after_sales = request.form.get('after_sales')
+        fuel_efficiency = request.form.get('fuel_efficiency')
+        safety = request.form.get('safety')
+        color = request.form.get('color')
+        energy = request.form.get('energy')
+
+        # --- Basic Validation (ensure required fields are present) ---
+        if not all([brand, model, year is not None, price is not None]): # year and price are converted, so check not None
+            return "Required fields (Brand, Model, Year, Price) are missing or invalid.", 400
+
+        # --- Generate new integer id ---
+        # Find the car with the highest current 'id' in cars_collection
+        last_car_doc = cars_collection.find_one(sort=[("id", -1)])
+        new_id = (last_car_doc["id"] + 1) if last_car_doc and "id" in last_car_doc else 1
+        
+        # --- Create new car data dictionary ---
+        new_car_data = {
+            "id": new_id, # Our custom integer ID
+            "brand": brand,
+            "model": model,
+            "year": year,
+            "price": price,
+            "style": style,
+            "performance": performance,
+            "wheel_drive": wheel_drive,
+            "sales": sales,
+            "after_sales": after_sales,
+            "fuel_efficiency": fuel_efficiency,
+            "safety": safety,
+            "color": color,
+            "energy": energy,
+            "engine_hp": engine_hp,
+            "mileage": mileage
+        }
+
+        # --- Insert into MongoDB ---
+        cars_collection.insert_one(new_car_data)
+        
+        return redirect(url_for('home')) 
+
+    # --- Handle GET request ---
+    return render_template('add_car.html')
 
 if __name__ == '__main__':
     seed_data() # Call seeding function
