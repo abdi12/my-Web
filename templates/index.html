@@ -11,6 +11,27 @@
         <h1>Welcome to the Car Comparison Tool!</h1>
         <p>Select cars to compare their features.</p>
         <p><a href="{{ url_for('add_car_route') }}">Add New Car to Comparison List</a></p>
+        
+        <div id="filter-controls" style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; background-color: #f9f9f9; border-radius: 5px;">
+            <h3>Filter Cars</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+                <div>
+                    <label for="filter_brand" style="display: block; margin-bottom: 5px;">Brand:</label>
+                    <input type="text" id="filter_brand" name="brand" placeholder="e.g., Toyota" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label for="filter_price_min" style="display: block; margin-bottom: 5px;">Min Price:</label>
+                    <input type="number" id="filter_price_min" name="price_min" placeholder="e.g., 10000" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label for="filter_price_max" style="display: block; margin-bottom: 5px;">Max Price:</label>
+                    <input type="number" id="filter_price_max" name="price_max" placeholder="e.g., 50000" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <button type="button" id="apply-filters-btn" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Apply Filters</button>
+                <button type="button" id="clear-filters-btn" style="padding: 10px 15px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear Filters</button>
+            </div>
+        </div>
+        
         <div id="car-listings">
             <!-- Car listings will be populated here by JavaScript -->
         </div>
@@ -18,8 +39,21 @@
     </div>
 
     <script>
-        window.onload = function() {
-            fetch('/api/cars')
+        function buildQueryString(params) {
+            const queryParts = [];
+            for (const key in params) {
+                if (params[key] !== undefined && params[key] !== null && params[key] !== "") {
+                    queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                }
+            }
+            return queryParts.length > 0 ? '?' + queryParts.join('&') : '';
+        }
+
+        function loadCars(queryString = "") {
+            const carListingsDiv = document.getElementById('car-listings');
+            carListingsDiv.innerHTML = ''; // Clear previous listings
+
+            fetch(`/api/cars${queryString}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok ' + response.statusText);
@@ -27,7 +61,6 @@
                     return response.json();
                 })
                 .then(cars => {
-                    const carListingsDiv = document.getElementById('car-listings');
                     cars.forEach(car => {
                         const carItemDiv = document.createElement('div');
                         carItemDiv.className = 'car-item';
@@ -38,7 +71,6 @@
                         checkbox.value = car.id;
 
                         const carInfoSpan = document.createElement('span');
-                        // Updated to include brand, style, and price in the new format
                         carInfoSpan.textContent = `${car.brand} ${car.model} (${car.year}) - Style: ${car.style} - Price: $${car.price}`;
 
                         carItemDiv.appendChild(checkbox);
@@ -49,6 +81,32 @@
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation:', error);
                 });
+        }
+
+        window.onload = function() {
+            loadCars(); // Initial load of all cars
+
+            document.getElementById('apply-filters-btn').addEventListener('click', function() {
+                const brand = document.getElementById('filter_brand').value;
+                const price_min = document.getElementById('filter_price_min').value;
+                const price_max = document.getElementById('filter_price_max').value;
+
+                const params = {
+                    brand: brand,
+                    price_min: price_min,
+                    price_max: price_max
+                };
+                
+                const queryString = buildQueryString(params);
+                loadCars(queryString);
+            });
+
+            document.getElementById('clear-filters-btn').addEventListener('click', function() {
+                document.getElementById('filter_brand').value = '';
+                document.getElementById('filter_price_min').value = '';
+                document.getElementById('filter_price_max').value = '';
+                loadCars(); // Load all cars
+            });
 
             const compareButton = document.getElementById('compare-button');
             compareButton.addEventListener('click', function() {

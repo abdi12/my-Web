@@ -102,8 +102,39 @@ def home():
 
 @app.route('/api/cars', methods=['GET'])
 def get_all_cars():
+    filter_query = {}
+
+    # Process brand filter
+    brand = request.args.get('brand')
+    if brand:
+        filter_query['brand'] = {'$regex': brand, '$options': 'i'}
+
+    # Process price filters
+    price_min_str = request.args.get('price_min')
+    price_max_str = request.args.get('price_max')
+    price_conditions = {}
+
+    if price_min_str:
+        try:
+            price_conditions['$gte'] = int(price_min_str)
+        except ValueError:
+            # Silently ignore if not a valid int, or log an error
+            # app.logger.warning(f"Invalid price_min value: {price_min_str}")
+            pass 
+    if price_max_str:
+        try:
+            price_conditions['$lte'] = int(price_max_str)
+        except ValueError:
+            # Silently ignore if not a valid int, or log an error
+            # app.logger.warning(f"Invalid price_max value: {price_max_str}")
+            pass
+            
+    if price_conditions:
+        filter_query['price'] = price_conditions
+    
     car_list = []
-    for car_doc in cars_collection.find():
+    # Fetch from MongoDB with filters and sort
+    for car_doc in cars_collection.find(filter_query).sort([("id", 1)]):
         car_list.append({
             "id": str(car_doc["_id"]),
             "original_id": car_doc.get("id"),
