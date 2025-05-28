@@ -109,6 +109,11 @@ def get_all_cars():
     if brand:
         filter_query['brand'] = {'$regex': brand, '$options': 'i'}
 
+    # Process style filter
+    style = request.args.get('style')
+    if style:
+        filter_query['style'] = {'$regex': style, '$options': 'i'}
+
     # Process price filters
     price_min_str = request.args.get('price_min')
     price_max_str = request.args.get('price_max')

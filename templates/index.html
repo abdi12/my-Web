@@ -20,6 +20,10 @@
                     <input type="text" id="filter_brand" name="brand" placeholder="e.g., Toyota" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
                 <div>
+                    <label for="filter_style" style="display: block; margin-bottom: 5px;">Style:</label>
+                    <input type="text" id="filter_style" name="style" placeholder="e.g., Sedan, SUV" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
                     <label for="filter_price_min" style="display: block; margin-bottom: 5px;">Min Price:</label>
                     <input type="number" id="filter_price_min" name="price_min" placeholder="e.g., 10000" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
@@ -90,11 +94,13 @@
                 const brand = document.getElementById('filter_brand').value;
                 const price_min = document.getElementById('filter_price_min').value;
                 const price_max = document.getElementById('filter_price_max').value;
+                const style = document.getElementById('filter_style').value; // Get style value
 
                 const params = {
                     brand: brand,
                     price_min: price_min,
-                    price_max: price_max
+                    price_max: price_max,
+                    style: style // Add style to params
                 };
                 
                 const queryString = buildQueryString(params);
@@ -105,6 +111,7 @@
                 document.getElementById('filter_brand').value = '';
                 document.getElementById('filter_price_min').value = '';
                 document.getElementById('filter_price_max').value = '';
+                document.getElementById('filter_style').value = ''; // Clear style filter
                 loadCars(); // Load all cars
             });
 
