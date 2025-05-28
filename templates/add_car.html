@@ -72,8 +72,22 @@
                 <input type="number" id="price" name="price" required>
             </div>
             <div class="form-group">
-                <label for="style">Style (e.g., Sedan, SUV):</label>
-                <input type="text" id="style" name="style">
+                <label for="style">Style:</label>
+                <select id="style" name="style" required style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                    <option value="">-- Select Style --</option>
+                    <option value="SUV">SUV</option>
+                    <option value="Coupe">Coupe</option>
+                    <option value="Crossover">Crossover</option>
+                    <option value="Sedan">Sedan</option>
+                    <option value="Hatchback">Hatchback</option>
+                    <option value="Pickup Truck">Pickup Truck</option>
+                    <option value="MPV">MPV</option>
+                    <option value="Van">Van</option>
+                    <option value="Convertible">Convertible</option>
+                    <option value="Jeep">Jeep</option>
+                    <option value="Truck">Truck</option>
+                    <option value="EV (Electric Vehicle)">EV (Electric Vehicle)</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="engine_hp">Engine HP:</label>
