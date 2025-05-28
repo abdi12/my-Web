@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Comparison</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -113,6 +114,120 @@
 
     <br>
     <a href="/">Back to Car List</a>
+
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+        <h2 style="text-align: center; margin-bottom: 20px;">Visual Comparison</h2>
+        <div style="width: 70%; margin: auto; padding-bottom: 30px;">
+            <canvas id="priceComparisonChart"></canvas>
+        </div>
+        <div style="width: 70%; margin: auto;">
+            <canvas id="engineHpComparisonChart"></canvas>
+        </div>
     </div>
+
+    </div>
+
+    <script>
+    (function() { // IIFE to avoid global scope pollution
+        // Ensure car data is available and the page has fully loaded
+        // DOMContentLoaded might be too early if 'cars' is rendered later in body by Jinja.
+        // A simple check for carsData or window.onload might be more robust here.
+        // However, if the script is at the end of body, DOM is usually ready.
+
+        const carsData = {{ cars|tojson|safe }};
+
+        if (!carsData || carsData.length === 0) {
+            console.log("No car data available to generate charts.");
+            return; // Don't proceed if no data
+        }
+
+        const labels = carsData.map(car => car.brand + " " + car.model + " (" + car.year + ")");
+        const prices = carsData.map(car => car.price);
+        const engineHps = carsData.map(car => car.engine_hp);
+
+        // Create Price Comparison Chart
+        const priceCtx = document.getElementById('priceComparisonChart');
+        if (priceCtx) {
+            new Chart(priceCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Price ($)',
+                        data: prices,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)', // Blue with more opacity
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true, // Maintain aspect ratio defined by canvas or CSS
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString(); // Format price
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Price Comparison',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            display: true // Show legend
+                        }
+                    }
+                }
+            });
+        } else {
+            console.error("Canvas element for price chart not found!");
+        }
+
+        // Create Engine HP Comparison Chart
+        const engineHpCtx = document.getElementById('engineHpComparisonChart');
+        if (engineHpCtx) {
+            new Chart(engineHpCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Engine HP',
+                        data: engineHps,
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)', // Red with more opacity
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Engine HP Comparison',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            display: true // Show legend
+                        }
+                    }
+                }
+            });
+        } else {
+            console.error("Canvas element for engine HP chart not found!");
+        }
+    })(); // End of IIFE
+    </script>
 </body>
 </html>
