@@ -43,6 +43,16 @@
     </div>
 
     <script>
+        const maxCompareCount = 4;
+
+        function updateCompareButtonState() {
+            const selectedCount = document.querySelectorAll('.car-select-checkbox:checked').length;
+            const compareButton = document.getElementById('compare-button');
+            if (compareButton) { // Ensure button exists
+                compareButton.disabled = (selectedCount === 0 || selectedCount > maxCompareCount);
+            }
+        }
+
         function buildQueryString(params) {
             const queryParts = [];
             for (const key in params) {
@@ -74,6 +84,16 @@
                         checkbox.className = 'car-select-checkbox';
                         checkbox.value = car.id;
 
+                        checkbox.addEventListener('click', function(event) {
+                            const currentlySelected = document.querySelectorAll('.car-select-checkbox:checked').length;
+                            if (this.checked && currentlySelected > maxCompareCount) {
+                                this.checked = false; // Prevent checking
+                                alert("You can select a maximum of " + maxCompareCount + " cars for comparison.");
+                                event.preventDefault(); // Just in case
+                            }
+                            updateCompareButtonState(); // Call to update button state
+                        });
+
                         const carInfoSpan = document.createElement('span');
                         carInfoSpan.textContent = `${car.brand} ${car.model} (${car.year}) - Style: ${car.style} - Price: $${car.price}`;
 
@@ -81,14 +101,17 @@
                         carItemDiv.appendChild(carInfoSpan);
                         carListingsDiv.appendChild(carItemDiv);
                     });
+                    updateCompareButtonState(); // Update button state after loading cars
                 })
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation:', error);
+                    updateCompareButtonState(); // Also update on error, as list is empty
                 });
         }
 
         window.onload = function() {
             loadCars(); // Initial load of all cars
+            updateCompareButtonState(); // Set initial button state
 
             document.getElementById('apply-filters-btn').addEventListener('click', function() {
                 const brand = document.getElementById('filter_brand').value;
