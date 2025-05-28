@@ -123,6 +123,9 @@
         <div style="width: 70%; margin: auto;">
             <canvas id="engineHpComparisonChart"></canvas>
         </div>
+        <div style="width: 80%; margin: auto; padding-bottom: 20px;"> <!-- Adjust padding as needed -->
+            <canvas id="performanceComparisonChart"></canvas>
+        </div>
     </div>
 
     </div>
@@ -144,6 +147,7 @@
         const labels = carsData.map(car => car.brand + " " + car.model + " (" + car.year + ")");
         const prices = carsData.map(car => car.price);
         const engineHps = carsData.map(car => car.engine_hp);
+        const performanceMetrics = carsData.map(car => car.performance_metric);
 
         // Create Price Comparison Chart
         const priceCtx = document.getElementById('priceComparisonChart');
@@ -226,6 +230,62 @@
             });
         } else {
             console.error("Canvas element for engine HP chart not found!");
+        }
+
+        // Create Performance Comparison Chart
+        const performanceCtx = document.getElementById('performanceComparisonChart');
+        if (performanceCtx) {
+            new Chart(performanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels, // Reuse existing labels (car brand + model + year)
+                    datasets: [{
+                        label: 'Performance Metric (e.g., Accel. Seconds - Lower is Better)',
+                        data: performanceMetrics,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)', // Teal/Green
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            // Optional: Add a title or specific formatting for the y-axis if needed
+                            // title: { display: true, text: 'Seconds (lower is better)' } 
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Performance Metric Comparison',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            display: true
+                        },
+                        tooltip: { // Customize tooltips if needed
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        // Display the raw value, add 's' for seconds, or other units
+                                        label += context.parsed.y + ' s (lower is better)'; 
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            console.error("Canvas element for performance chart not found!");
         }
     })(); // End of IIFE
     </script>
