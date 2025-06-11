@@ -70,3 +70,16 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+/* Chart container styles */
+.chart-container {
+    /* General styles for chart containers, can be expanded */
+    /* For now, let radar-chart-container define specifics */
+}
+
+.radar-chart-container {
+    width: 80%;
+    margin: 20px auto; /* top/bottom margin 20px, left/right auto for centering */
+    padding-bottom: 20px;
+    /* padding-top: 20px; */ /* Optional: if top padding is also desired */
+}

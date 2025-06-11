@@ -126,6 +126,9 @@
         <div style="width: 80%; margin: auto; padding-bottom: 20px;"> <!-- Adjust padding as needed -->
             <canvas id="performanceComparisonChart"></canvas>
         </div>
+        <div class="chart-container radar-chart-container"> <!-- Added for Radar Chart -->
+            <canvas id="radarComparisonChart"></canvas>
+        </div>
     </div>
 
     </div>
@@ -148,6 +151,19 @@
         const prices = carsData.map(car => car.price);
         const engineHps = carsData.map(car => car.engine_hp);
         const performanceMetrics = carsData.map(car => car.performance_metric);
+        // For Radar Chart
+        const mileages = carsData.map(car => car.mileage);
+        const fuelEfficienciesAvg = carsData.map(car => car.fuel_efficiency_avg);
+
+        // Predefined colors for radar chart datasets
+        const radarChartColors = [
+            { fill: 'rgba(255, 99, 132, 0.2)', stroke: 'rgba(255, 99, 132, 1)' }, // Red
+            { fill: 'rgba(54, 162, 235, 0.2)', stroke: 'rgba(54, 162, 235, 1)' }, // Blue
+            { fill: 'rgba(255, 206, 86, 0.2)', stroke: 'rgba(255, 206, 86, 1)' }, // Yellow
+            { fill: 'rgba(75, 192, 192, 0.2)', stroke: 'rgba(75, 192, 192, 1)' }, // Green
+            { fill: 'rgba(153, 102, 255, 0.2)', stroke: 'rgba(153, 102, 255, 1)' }, // Purple
+            { fill: 'rgba(255, 159, 64, 0.2)', stroke: 'rgba(255, 159, 64, 1)' }  // Orange
+        ];
 
         // Create Price Comparison Chart
         const priceCtx = document.getElementById('priceComparisonChart');
@@ -287,6 +303,108 @@
         } else {
             console.error("Canvas element for performance chart not found!");
         }
+
+        // --- Create Radar Comparison Chart ---
+        const radarCtx = document.getElementById('radarComparisonChart');
+        if (radarCtx && carsData.length > 0) {
+            const radarDatasets = carsData.map((car, index) => {
+                const colorSet = radarChartColors[index % radarChartColors.length]; // Cycle through colors
+                // Use raw values, defaulting to 0 if null or undefined
+                // Scale price by 1000 for display on chart
+                const displayPrice = car.price !== null && typeof car.price !== 'undefined' ? car.price / 1000 : 0;
+                const carEngineHp = car.engine_hp !== null && typeof car.engine_hp !== 'undefined' ? car.engine_hp : 0;
+                const carMileage = car.mileage !== null && typeof car.mileage !== 'undefined' ? car.mileage : 0;
+                const carFuelEfficiencyAvg = car.fuel_efficiency_avg !== null && typeof car.fuel_efficiency_avg !== 'undefined' ? car.fuel_efficiency_avg : 0;
+
+                return {
+                    label: car.brand + " " + car.model,
+                    data: [
+                        displayPrice, // Price in 'k'
+                        carEngineHp,
+                        carMileage,
+                        carFuelEfficiencyAvg
+                    ],
+                    backgroundColor: colorSet.fill,
+                    borderColor: colorSet.stroke,
+                    pointBackgroundColor: colorSet.stroke,
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: colorSet.stroke
+                };
+            });
+
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ["Price (k)", "Engine HP", "Mileage (Lower is Better)", "Fuel Efficiency Avg (MPG)"],
+                    datasets: radarDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    elements: {
+                        line: {
+                            borderWidth: 3
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            angleLines: { display: true },
+                            // Remove suggestedMin, suggestedMax, and stepSize for auto-scaling
+                            pointLabels: {
+                                font: {
+                                    size: 10 // Smaller font for point labels if too crowded
+                                }
+                            },
+                            ticks: {
+                                // Auto-scaling will determine the ticks.
+                                // We can customize the tick formatting if needed, e.g., for large numbers.
+                                 backdropColor: 'rgba(0,0,0,0)' // Keep ticks background transparent
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Multi-Attribute Radar Comparison',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    // For radar charts, context.parsed.r gives the value for the point
+                                    // context.label is the axis label e.g. "Price (k)"
+                                    // context.dataset.label is the car name e.g. "Honda Civic"
+                                    if (context.parsed.r !== null) {
+                                        if (context.label === "Price (k)") {
+                                            label += context.parsed.r.toFixed(1) + 'k'; // e.g., "43.0k"
+                                        } else {
+                                            label += context.parsed.r; // Display raw value for other attributes
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else if (!radarCtx) {
+            console.error("Canvas element for radar chart not found!");
+        } else {
+            console.log("No car data to display radar chart.");
+            // Optionally hide the canvas or show a message
+            // radarCtx.style.display = 'none';
+        }
+
     })(); // End of IIFE
     </script>
 </body>

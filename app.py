@@ -98,6 +98,26 @@ def process_car_data(car_doc):
     match = re.search(r"(\d+\.?\d*)\s*s", performance_string) # searches for digits followed by 's' (like 4.5s)
     performance_metric = float(match.group(1)) if match else None
 
+    fuel_efficiency_string = car_doc.get('fuel_efficiency', '')
+    fuel_efficiency_avg = None
+    try:
+        city_mpg_match = re.search(r"(\d+)\s*MPG City", fuel_efficiency_string, re.IGNORECASE)
+        highway_mpg_match = re.search(r"(\d+)\s*MPG Hw?y", fuel_efficiency_string, re.IGNORECASE) # Allow Hwy or Hwy
+
+        city_mpg = int(city_mpg_match.group(1)) if city_mpg_match else None
+        highway_mpg = int(highway_mpg_match.group(1)) if highway_mpg_match else None
+
+        if city_mpg and highway_mpg:
+            fuel_efficiency_avg = round((city_mpg + highway_mpg) / 2)
+        elif city_mpg:
+            fuel_efficiency_avg = city_mpg
+        elif highway_mpg:
+            fuel_efficiency_avg = highway_mpg
+        # If neither, fuel_efficiency_avg remains None
+    except (ValueError, AttributeError): # Catch potential errors during parsing
+        fuel_efficiency_avg = None
+
+
     processed_car = {
         "id": str(car_doc["_id"]), # String version of MongoDB's ObjectId
         "original_id": car_doc.get("id"), # Original integer ID, if used
@@ -111,7 +131,8 @@ def process_car_data(car_doc):
         "wheel_drive": car_doc.get("wheel_drive"),
         "sales": car_doc.get("sales"),
         "after_sales": car_doc.get("after_sales"),
-        "fuel_efficiency": car_doc.get("fuel_efficiency"),
+        "fuel_efficiency": fuel_efficiency_string, # Keep original string
+        "fuel_efficiency_avg": fuel_efficiency_avg, # Add new average
         "safety": car_doc.get("safety"),
         "color": car_doc.get("color"),
         "energy": car_doc.get("energy"),
